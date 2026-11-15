@@ -312,7 +312,23 @@ button.bchip{background:rgba(255,255,255,.12)}
 .disc h3{font-size:22px;flex:0 0 240px;color:#fff}
 .disc p{flex:1 1 360px;font-size:15px;line-height:1.7;color:#E2DDD4}
 
+
+/* moon */
+.moon{display:flex;flex-wrap:wrap;overflow:hidden}
+.mn-id{flex:0 0 260px;background:#2B2A3A;color:#fff;padding:28px;display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.mn-id h3{font-size:26px;color:#fff;margin-top:10px}
+.mn-id small{font-size:13.5px;color:#D9D6E6}
+.mn-body{flex:1 1 340px;min-width:0;padding:28px 32px;display:flex;flex-direction:column;gap:18px}
+.mn-body h4{font-family:var(--sans);font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--soft);margin-bottom:6px}
+.mn-body p{font-size:15px;line-height:1.65}
+.mn-side{flex:0 1 320px;min-width:250px;background:var(--purple-soft);color:var(--purple-ink);padding:28px;display:flex;flex-direction:column;gap:12px}
+.mn-side h4{font-family:var(--sans);font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase}
+.mn-ev{display:flex;justify-content:space-between;gap:12px;font-size:14px;padding:8px 0;border-top:1px solid rgba(84,68,122,.2)}
+.mn-ev:first-of-type{border-top:0}
+.mn-ev strong{text-align:right}
+@media (max-width:900px){.mn-id{flex-basis:100%}}
 footer.foot{border-top:1px solid var(--line);padding:28px 0 36px;font-size:13px;color:var(--soft)}
+.copy{width:100%;border-top:1px solid var(--line);margin-top:14px;padding-top:14px}
 .foot-in{display:flex;justify-content:space-between;gap:12px 24px;flex-wrap:wrap;align-items:center}
 .foot button{background:none;border:0;text-decoration:underline;color:var(--soft);min-height:44px;padding:0}
 #toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 20px;border-radius:999px;font-size:14px;font-weight:600;z-index:50;opacity:0;pointer-events:none;transition:opacity .2s}
@@ -392,6 +408,7 @@ noscript{display:block;padding:32px;text-align:center}
   <div class="container foot-in">
     <span>Cycle Sync is educational content, not medical advice. Predictions are estimates, and every cycle is different. See a doctor for severe pain or anything that worries you.</span>
     <button type="button" data-act="clear">Clear my saved data</button>
+    <div class="copy">&copy; <span id="yr">2026</span> Cycle Sync is a product of Oakland Software Co. All rights reserved.</div>
   </div>
 </footer>
 <div id="toast" role="status" aria-live="polite"></div>
@@ -783,6 +800,87 @@ function observedAvg(){
   return Math.round(d.reduce(function(a,b){return a+b;},0)/d.length);
 }
 
+
+/* ================= moon ================= */
+var SYN=29.530588853;
+function rad(x){return x*Math.PI/180;}
+function norm(x){x=x%360;return x<0?x+360:x;}
+function moonAt(dn){
+  var d=dn-10957; /* days from J2000 at 12:00 UTC */
+  var lon=norm(218.316+13.176396*d+6.289*Math.sin(rad(134.963+13.064993*d)));
+  var g=357.528+0.9856003*d;
+  var sun=norm(280.460+0.9856474*d+1.915*Math.sin(rad(g))+0.020*Math.sin(rad(2*g)));
+  var e=norm(lon-sun);
+  return {lon:lon,e:e,ill:(1-Math.cos(rad(e)))/2,sign:Math.floor(lon/30)};
+}
+var MPH=[
+ ['New Moon','Dark sky, fresh start','Think reset. Energy often feels quiet and inward, a good time for rest and low-key plans.'],
+ ['Waxing Crescent','Small beginnings','The moon is building. Good for setting intentions and starting small habits together.'],
+ ['First Quarter','Decisions & momentum','Half lit and growing. Traditionally a time for action and follow-through.'],
+ ['Waxing Gibbous','Almost there','Nearly full. Many people feel a build-up of energy and anticipation.'],
+ ['Full Moon','Peak brightness','The brightest night. Traditionally linked with high emotion and social energy, and often with restless sleep.'],
+ ['Waning Gibbous','Gratitude & sharing','Just past full. A time to share, talk things through and appreciate.'],
+ ['Last Quarter','Release & simplify','Half lit and shrinking. Traditionally about letting go and clearing the decks.'],
+ ['Waning Crescent','Rest before the reset','The last sliver. Slow down, rest up and keep plans light.']
+];
+function mphIdx(e){return Math.floor(((e+22.5)%360)/45);}
+function moonSVG(e,size){
+  var r=20,c=Math.cos(rad(e)),rx=(r*Math.abs(c)).toFixed(2),wax=e<180,p;
+  if(wax)p='M0 -'+r+'A'+r+' '+r+' 0 0 1 0 '+r+'A'+rx+' '+r+' 0 0 '+(c>0?0:1)+' 0 -'+r+'Z';
+  else p='M0 -'+r+'A'+r+' '+r+' 0 0 0 0 '+r+'A'+rx+' '+r+' 0 0 '+(c>0?1:0)+' 0 -'+r+'Z';
+  return '<svg width="'+size+'" height="'+size+'" viewBox="-24 -24 48 48" role="img" aria-label="Moon phase"><circle r="'+r+'" fill="#4A4660"/><path d="'+p+'" fill="#F6F1E4"/><circle r="'+r+'" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="1"/></svg>';
+}
+function moonEvents(dn,e){
+  var tg=[[0,'New Moon'],[90,'First Quarter'],[180,'Full Moon'],[270,'Last Quarter']];
+  return tg.map(function(t){
+    var days=norm(t[0]-e)/(360/SYN);
+    if(days<0.3)days+=SYN;
+    return {n:t[1],dn:Math.floor(dn+0.5+days),sign:SIGNS[moonAt(dn+days).sign]};
+  }).sort(function(a,b){return a.dn-b.dn;});
+}
+function moonInSign(dn,idx){
+  var runs=[],cur=null;
+  for(var i=0;i<=32;i++){
+    var on=moonAt(dn+i).sign===idx;
+    if(on&&!cur)cur={a:dn+i,b:dn+i};
+    else if(on)cur.b=dn+i;
+    else if(cur){runs.push(cur);cur=null;}
+  }
+  if(cur)runs.push(cur);
+  return runs[0]||null;
+}
+var EL_REL={
+  same:'The moon is in her own element today, which astrologers describe as an easy, natural match: she may feel more like herself.',
+  comp:'The moon\u2019s element complements hers today (fire\u2013air or earth\u2013water), which astrologers read as supportive, with an easy flow.',
+  clash:'The moon\u2019s element contrasts with hers today. Astrologers say that can feel a bit out of step, so go gently and keep things simple.'
+};
+function elRel(a,b){
+  if(a===b)return 'same';
+  var pair=[a,b].sort().join('+');
+  return (pair==='air+fire'||pair==='earth+water')?'comp':'clash';
+}
+function moonSection(t,pid){
+  var mo=moonAt(t),idx=mphIdx(mo.e),ph=MPH[idx],ms=SIGNS[mo.sign],sign=curSign(),ev=moonEvents(t,mo.e);
+  var evRows=ev.map(function(x){
+    return '<div class="mn-ev"><span>'+x.n+'</span><strong>'+fmt(x.dn,{weekday:'short',month:'short',day:'numeric'})+' \u00B7 in '+x.sign.n+'</strong></div>';
+  }).join('');
+  var rel='';
+  if(sign){
+    var run=moonInSign(t,SIGNS.indexOf(sign)),same=(mo.sign===SIGNS.indexOf(sign));
+    var key=elRel(sign.el,ms.el);
+    rel='<div><h4>The moon and her sign ('+sign.n+')</h4><p>'+(same?'The moon is in <strong>'+sign.n+'</strong> today, her own sign. Astrologers say this tends to amplify her usual traits. ':'The moon is in <strong>'+ms.n+'</strong> ('+ELEMENTS[ms.el].name.toLowerCase()+'), and she\u2019s a '+sign.n+' ('+ELEMENTS[sign.el].name.toLowerCase()+'). ')+esc(EL_REL[key])+'</p>'+
+      (run&&!same?'<p class="muted" style="margin-top:8px;font-size:14px">The moon next visits '+sign.n+' around '+fmtRange(run.a,run.b)+'.</p>':'')+
+      (same&&run?'<p class="muted" style="margin-top:8px;font-size:14px">It stays in '+sign.n+' through about '+fmt(run.b,MD)+'.</p>':'')+'</div>';
+  }else{
+    rel='<div><h4>The moon and her sign</h4><p>Add her birthday on the <a href="#zodiac" style="font-weight:600">Zodiac guide</a> to see how today\u2019s moon sign lines up with hers.</p></div>';
+  }
+  return '<div class="card moon">'+
+    '<div class="mn-id">'+moonSVG(mo.e,84)+'<h3>'+ph[0]+'</h3><small>'+Math.round(mo.ill*100)+'% lit \u00B7 moon in '+glyph(ms)+' '+ms.n+'</small><small>'+esc(ph[1])+'</small></div>'+
+    '<div class="mn-body"><div><h4>What the moon is doing</h4><p>'+esc(ph[2])+'</p></div>'+rel+
+    '<p class="note" style="margin:0">Moon dates and signs are calculated on your device and are accurate to within about a day. The moon\u2019s phase has no proven effect on menstrual timing: most cycles are not 29.5 days, and studies haven\u2019t found a reliable link. It\u2019s here for fun and for noticing patterns, not as a prediction.</p></div>'+
+    '<div class="mn-side"><h4>Coming up</h4><div>'+evRows+'</div></div></div>';
+}
+
 /* ================= shared html ================= */
 function strip(len,per,day){
   var pm=phaseMap(len,per);
@@ -969,6 +1067,8 @@ function viewToday(){
     '</div></div>'+
 
     '<div class="sec"><div class="sec-head"><h2>'+(sign?sign.n+' × '+P.name.toLowerCase()+' phase':'Her sign, her phase')+'</h2><a class="link" href="#zodiac">Open the zodiac guide →</a></div>'+signCard(c.phase)+'</div>'+
+
+    '<div class="sec"><div class="sec-head"><h2>The moon today</h2><a class="link" href="#zodiac">Open the zodiac guide \u2192</a></div>'+moonSection(t,c.phase)+'</div>'+
 
     '<div class="sec"><div class="sec-head"><h2>The next 7 days</h2><a class="link" href="#calendar">Open full calendar →</a></div><div class="week">'+week+'</div></div>'+
 
@@ -1224,6 +1324,7 @@ document.addEventListener('click',function(e){
   }
 });
 
+document.getElementById('yr').textContent=new Date().getFullYear();
 route(false);
 })();
 </script>
