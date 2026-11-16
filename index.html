@@ -330,6 +330,7 @@ button.bchip{background:rgba(255,255,255,.12)}
 footer.foot{border-top:1px solid var(--line);padding:28px 0 36px;font-size:13px;color:var(--soft)}
 .copy{width:100%;border-top:1px solid var(--line);margin-top:14px;padding-top:14px}
 .foot-in{display:flex;justify-content:space-between;gap:12px 24px;flex-wrap:wrap;align-items:center}
+.foot a#fb{color:var(--soft);min-height:44px;display:inline-flex;align-items:center}
 .foot button{background:none;border:0;text-decoration:underline;color:var(--soft);min-height:44px;padding:0}
 #toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 20px;border-radius:999px;font-size:14px;font-weight:600;z-index:50;opacity:0;pointer-events:none;transition:opacity .2s}
 #toast.on{opacity:1}
@@ -407,6 +408,7 @@ noscript{display:block;padding:32px;text-align:center}
 <footer class="foot">
   <div class="container foot-in">
     <span>Cycle Sync is educational content, not medical advice. Predictions are estimates, and every cycle is different. See a doctor for severe pain or anything that worries you.</span>
+    <a id="fb" href="#" target="_blank" rel="noopener noreferrer" hidden>Send feedback</a>
     <button type="button" data-act="clear">Clear my saved data</button>
     <div class="copy">&copy; <span id="yr">2026</span> Cycle Sync is a product of Oakland Software Co. All rights reserved.</div>
   </div>
@@ -1324,6 +1326,7 @@ document.addEventListener('click',function(e){
   }
 });
 
+(function(){var h=location.hostname,m=h.match(/^([^.]+)\.github\.io$/),p=location.pathname.split('/')[1];var u=m?'https://github.com/'+m[1]+'/'+(p||m[1]+'.github.io')+'/issues/new/choose':null;var a=document.getElementById('fb');if(u&&a){a.href=u;a.hidden=false;}})();
 document.getElementById('yr').textContent=new Date().getFullYear();
 route(false);
 })();
