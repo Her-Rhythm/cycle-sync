@@ -1,0 +1,38 @@
+name: Feedback or correction
+description: Something is unclear, missing or wrong on Cycle Sync
+title: "[Feedback] "
+labels: ["feedback"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping make Cycle Sync better. **Issues on GitHub are public.** Please don't include personal health details, dates or anything you wouldn't post online.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which part of the site?
+      options:
+        - Start here
+        - Today
+        - The 4 phases (food, activities, tips)
+        - Calendar
+        - Zodiac guide or moon
+        - Something else
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What would you change or add?
+      description: A correction, a missing idea, wording that felt off, anything.
+    validations:
+      required: true
+  - type: dropdown
+    id: who
+    attributes:
+      label: Optional, so we can weigh feedback
+      options:
+        - I menstruate or have a cycle
+        - I'm a partner or friend of someone who does
+        - Healthcare or wellness professional
+        - Prefer not to say

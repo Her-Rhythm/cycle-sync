@@ -1,0 +1,19 @@
+name: Something is broken
+description: A page won't load, a date looks wrong or a button does nothing
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: Issues are public. Please don't include real personal dates.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Device and browser
+      placeholder: iPhone, Safari / Windows, Chrome
